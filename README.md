@@ -37,6 +37,9 @@ pr-checks-sandbox/
    git clone https://github.com/YOUR_USERNAME/pr-checks-sandbox.git
    cd pr-checks-sandbox
    ```
+3. **Customize configuration** (replace placeholders):
+   - Update `.github/dependabot.yml` with your GitHub username
+   - Modify workflow files if needed for your specific testing scenarios
 3. **Install dependencies**:
    ```bash
    npm install
