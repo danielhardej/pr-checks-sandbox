@@ -1,0 +1,72 @@
+name: Scheduled Checks
+
+on:
+  schedule:
+    # Run every day at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  dependency-audit:
+    name: Daily Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run dependency audit
+        run: npm audit --audit-level=low
+
+      - name: Check for outdated packages
+        run: npm outdated || true
+
+  link-checker:
+    name: Check Links in Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check links in README
+        run: |
+          echo "Checking links in documentation..."
+          # Mock link checker - in real scenario, use a proper link checker
+          if grep -o 'http[s]*://[^)]\\+' README.md; then
+            echo "Links found - would validate in real scenario"
+          else
+            echo "No external links found"
+          fi
+
+  health-check:
+    name: Application Health Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run application health check
+        run: |
+          echo "Running health checks..."
+          npm start &
+          APP_PID=$!
+          sleep 2
+          kill $APP_PID || true
+          echo "Health check completed"

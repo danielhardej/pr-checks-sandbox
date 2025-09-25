@@ -1,0 +1,24 @@
+{
+  "name": "pr-checks-sandbox",
+  "version": "1.0.0",
+  "description": "A test environment for testing pull request checks on GitHub Actions",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src/ --ext .js",
+    "lint:fix": "eslint src/ --ext .js --fix",
+    "build": "echo 'Building application...' && mkdir -p dist && cp src/* dist/ 2>/dev/null || true",
+    "start": "node src/index.js",
+    "validate": "npm run lint && npm run test && npm run build"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "lcov", "html"]
+  }
+}

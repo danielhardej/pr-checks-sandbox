@@ -1,0 +1,42 @@
+name: Auto-merge Dependabot PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  auto-merge:
+    name: Auto-merge Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if PR is from Dependabot
+        run: |
+          echo "PR author: ${{ github.actor }}"
+          echo "PR title: ${{ github.event.pull_request.title }}"
+
+      - name: Approve PR
+        if: contains(github.event.pull_request.title, 'bump') && contains(github.event.pull_request.title, 'patch')
+        run: |
+          echo "This is a patch version bump from Dependabot - would auto-approve"
+          # In real scenario: gh pr review --approve ${{ github.event.pull_request.number }}
+
+      - name: Enable auto-merge
+        if: contains(github.event.pull_request.title, 'bump') && contains(github.event.pull_request.title, 'patch')
+        run: |
+          echo "Would enable auto-merge for patch updates"
+          # In real scenario: gh pr merge --auto --squash ${{ github.event.pull_request.number }}
+
+  manual-review-required:
+    name: Major Updates Need Review
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]' && (contains(github.event.pull_request.title, 'major') || contains(github.event.pull_request.title, 'minor'))
+    steps:
+      - name: Request manual review
+        run: |
+          echo "Major or minor version update detected - manual review required"
+          echo "PR: ${{ github.event.pull_request.title }}"
+          # In real scenario, could add labels or request specific reviewers
